@@ -16,9 +16,9 @@ def mock_credentials():
     return creds
 
 
-@patch("src.email_extract.pickle.load")
-@patch("src.email_extract.open", create=True)
-@patch("src.email_extract.os.path.exists", return_value=True)
+@patch("src.email_fetcher.pickle.load")
+@patch("src.email_fetcher.open", create=True)
+@patch("src.email_fetcher.os.path.exists", return_value=True)
 def test_authenticate_gmail_existing_token(
     mock_exists, mock_open, mock_pickle_load, mock_credentials
 ):
@@ -28,9 +28,9 @@ def test_authenticate_gmail_existing_token(
     assert creds.refresh_token == "mock_reftok"
 
 
-@patch("src.email_extract.InstalledAppFlow.from_client_secrets_file")
-@patch("src.email_extract.pickle.dump")
-@patch("src.email_extract.open", create=True)
+@patch("src.email_fetcher.InstalledAppFlow.from_client_secrets_file")
+@patch("src.email_fetcher.pickle.dump")
+@patch("src.email_fetcher.open", create=True)
 def test_auth_gmail_new_token(mock_open, mock_pickle_dump, mock_flow):
     mock_flow.return_value.run_local_server.return_value = MagicMock(
         spec=Credentials, valid=True
@@ -40,8 +40,8 @@ def test_auth_gmail_new_token(mock_open, mock_pickle_dump, mock_flow):
     mock_pickle_dump.assert_called()
 
 
-@patch("src.email_extract.authenticate_gmail")
-@patch("src.email_extract.build")
+@patch("src.email_fetcher.authenticate_gmail")
+@patch("src.email_fetcher.build")
 def test_fetch_emails(mock_build, mock_authenticate_gmail, mock_credentials):
     mock_authenticate_gmail.return_value = mock_credentials
     mock_service = MagicMock()
