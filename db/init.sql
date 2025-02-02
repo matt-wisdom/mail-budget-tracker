@@ -21,7 +21,7 @@ CREATE TABLE "transactions" (
   "amount" float,
   "currency" varchar(3),
   "date_id" integer,
-  "user_id" integer,
+  "customer_id" integer,
   "bank_id" integer,
   "transaction_id" integer
 );
