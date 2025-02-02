@@ -162,8 +162,3 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
         )
         res.append(email_data)
     return res
-
-
-if __name__ == "__main__":
-    for i in fetch_emails(datetime(2025, 1, 25)):
-        print(i.subject, "\n")

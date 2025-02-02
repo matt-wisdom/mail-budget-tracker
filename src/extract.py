@@ -65,27 +65,3 @@ def write_transaction_to_db(transaction: Transaction) -> int:
         transaction_details_id,
     )
     return id
-
-
-if __name__ == "__main__":
-    txt = """Card Deposit Successful
-Inbox
-
-Grey <hello@grey.co>
-Mon, Jan 20, 7:20 AM (13 days ago)
-to me
-
-Grey
-Hello Wisdom,
-
-Your card deposit was successful 🤑
-The details are shown below:
-
-Transaction Type:	NGN-USD
-Amount tendered:	165000.00
-Amount received:	96.40
-Payment Method:	card_deposit
-Reference:	EPCMBKYWGMF
-Date & Time:	01/20/2025 - 6:19 AM UTC
-If you didn't initiate this transaction, please contact our support team immediately via in-app or email support@grey.co"""
-    print(write_transaction_to_db(extract_from_mail(txt)))
