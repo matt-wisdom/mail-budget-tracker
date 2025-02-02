@@ -36,9 +36,9 @@ def extract_json_from_markdown(markdown_text):
             return json.loads(json_str)  # Convert to Python dictionary
         except json.JSONDecodeError:
             LOGGER.error("Invalid JSON")
-            return {}
+            return {"error": "Invalid JSON format"}
     LOGGER.error("No JSON data could be extracted")
-    return {}
+    return {"error": "No JSON found"}
 
 
 def extract_from_mail(email: str) -> Transaction:
