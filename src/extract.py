@@ -51,7 +51,7 @@ def extract_from_mail(email: str) -> Transaction:
         raise e
 
 
-def write_transaction_to_db(transaction: Transaction) -> int:
+def write_transaction_to_db(transaction: Transaction, email_id: int) -> int:
     cust_id = insert_customer(
         transaction.sender, transaction.receiver, transaction.account_number
     )
@@ -69,6 +69,7 @@ def write_transaction_to_db(transaction: Transaction) -> int:
         date_id,
         cust_id,
         bank_id,
+        email_id,
         transaction_details_id,
     )
     return id

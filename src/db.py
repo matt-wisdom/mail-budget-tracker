@@ -72,6 +72,31 @@ def insert_bank(bank_name: str) -> int:
     return insert_data(query, (bank_name,))
 
 
+# Function to insert email details
+def insert_email(
+    email_id: str, subject: str, sender: str, date_received: datetime, body: str
+) -> int:
+    query = """
+        INSERT INTO dim_email (email_id, subject, sender, date_received, body)
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING id
+    """
+    return insert_data(query, (email_id, subject, sender, date_received, body))
+
+
+# Function to check if email_id exists in dim_email
+def email_exists(email_id: str) -> bool:
+    query = "SELECT 1 FROM dim_email WHERE email_id = %s"
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(query, (email_id,))
+                return cur.fetchone() is not None
+    except Exception as e:
+        LOGGER.error(f"Error checking email existence: {e}")
+        return False
+
+
 # Function to insert customer details
 def insert_customer(sender: str, receiver: str, account_number: str) -> int:
     query = """
@@ -89,13 +114,14 @@ def insert_transaction(
     date_id: int,
     cust_id: int,
     bank_id: int,
+    email_id: int,
     transaction_id: int,
 ) -> int:
     query = """
-        INSERT INTO transactions (amount, currency, date_id, customer_id, bank_id, transaction_id)
+        INSERT INTO transactions (amount, currency, date_id, customer_id, bank_id, transaction_id, email_id)
         VALUES (%s, %s, %s, %s, %s, %s)
         RETURNING transaction_id
     """
     return insert_data(
-        query, (amount, currency, date_id, cust_id, bank_id, transaction_id)
+        query, (amount, currency, date_id, cust_id, bank_id, transaction_id, email_id)
     )

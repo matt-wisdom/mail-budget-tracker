@@ -155,6 +155,7 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
                 },  # Re-add UNREAD label
             ).execute()
         email_data = EmailData(
+            id=msg["id"],
             subject=subject,
             sender=sender,
             date_received=date_received_dt,

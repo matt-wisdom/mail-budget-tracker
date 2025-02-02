@@ -108,7 +108,7 @@ def test_extract_from_mail(mock_prompt_gemini):
 def test_write_transaction_to_db(
     mock_cust, mock_date, mock_bank, mock_tdet, mock_trans
 ):
-    assert write_transaction_to_db(EXPECTED_TRANSACTION) == 1
+    assert write_transaction_to_db(EXPECTED_TRANSACTION, 0) == 1
     mock_cust.assert_called_once()
     mock_date.assert_called_once()
     mock_bank.assert_called_once()
