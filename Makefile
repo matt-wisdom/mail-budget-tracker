@@ -1,6 +1,4 @@
-# Makefile for managing Python project tasks with Poetry
-
-.PHONY: install ruff format test
+.PHONY: install ruff format test coverage
 
 # Install dependencies using Poetry
 install:
@@ -21,3 +19,11 @@ format:
 test:
 	@echo "Running tests with pytest..."
 	poetry run pytest
+
+# Run tests with coverage and generate an HTML report
+coverage:
+	@echo "Running tests with coverage..."
+	poetry run coverage run -m pytest
+	@echo "Generating HTML coverage report..."
+	poetry run coverage html
+	@echo "Coverage report generated in htmlcov/index.html"
