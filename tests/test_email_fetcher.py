@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 from google.oauth2.credentials import Credentials
-from src.email_fetcher import authenticate_gmail, fetch_emails
+from src.email_fetcher import authenticate_gmail, fetch_emails, is_alert_tx
 from src.models import EmailData
 
 
@@ -40,9 +40,48 @@ def test_auth_gmail_new_token(mock_open, mock_pickle_dump, mock_flow):
     mock_pickle_dump.assert_called()
 
 
+def test_is_alert_tx():
+    assert is_alert_tx("payment successful") is True
+    assert is_alert_tx("payment unknown") is False
+
+
 @patch("src.email_fetcher.authenticate_gmail")
 @patch("src.email_fetcher.build")
 def test_fetch_emails(mock_build, mock_authenticate_gmail, mock_credentials):
+    mock_authenticate_gmail.return_value = mock_credentials
+    mock_service = MagicMock()
+    mock_build.return_value = mock_service
+
+    mock_service.users().messages().list().execute.return_value = {
+        "messages": [{"id": "12345"}]
+    }
+
+    mock_service.users().messages().get().execute.return_value = {
+        "payload": {
+            "headers": [
+                {"name": "Subject", "value": "Payment Successful"},
+                {"name": "From", "value": "test@example.com"},
+                {"name": "Date", "value": "Fri, 26 Jan 2025 14:00:00"},
+            ],
+            "parts": [
+                {
+                    "mimeType": "text/plain",
+                    "body": {"data": base64.urlsafe_b64encode(b"Yo Yo YO").decode()},
+                }
+            ],  # Base64 encoded "Test body"
+        }
+    }
+    emails = fetch_emails(datetime(2025, 1, 25))
+    assert len(emails) == 1
+    assert emails[0].subject == "Payment Successful"
+    assert emails[0].sender == "test@example.com"
+    assert emails[0].body == "Yo Yo YO"
+    assert isinstance(emails[0], EmailData)
+
+
+@patch("src.email_fetcher.authenticate_gmail")
+@patch("src.email_fetcher.build")
+def test_fetch_emails_not_tx(mock_build, mock_authenticate_gmail, mock_credentials):
     mock_authenticate_gmail.return_value = mock_credentials
     mock_service = MagicMock()
     mock_build.return_value = mock_service
@@ -67,8 +106,4 @@ def test_fetch_emails(mock_build, mock_authenticate_gmail, mock_credentials):
         }
     }
     emails = fetch_emails(datetime(2025, 1, 25))
-    assert len(emails) == 1
-    assert emails[0].subject == "Test"
-    assert emails[0].sender == "test@example.com"
-    assert emails[0].body == "Yo Yo YO"
-    assert isinstance(emails[0], EmailData)
+    assert len(emails) == 0
