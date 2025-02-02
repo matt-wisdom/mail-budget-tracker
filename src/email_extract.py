@@ -101,9 +101,15 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
                     break  # Get first plain text part
         # Parse the date to a datetime object
         # Clean and parse the date received
-        date_received = date_received.split(" (")[0]  # Remove timezone in parentheses if present
-        date_received = date_received.split(" +")[0]  # Remove timezone offset if present
-        date_received = date_received.split(" -")[0]  # Remove timezone offset if present
+        date_received = date_received.split(" (")[
+            0
+        ]  # Remove timezone in parentheses if present
+        date_received = date_received.split(" +")[
+            0
+        ]  # Remove timezone offset if present
+        date_received = date_received.split(" -")[
+            0
+        ]  # Remove timezone offset if present
         date_received = date_received.replace("GMT", "").replace("UTC", "").strip()
 
         try:
@@ -116,7 +122,10 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
             service.users().messages().modify(
                 userId="me",
                 id=msg["id"],
-                body={"removeLabelIds": ["UNREAD"], "addLabelIds": ["UNREAD"]}  # Re-add UNREAD label
+                body={
+                    "removeLabelIds": ["UNREAD"],
+                    "addLabelIds": ["UNREAD"],
+                },  # Re-add UNREAD label
             ).execute()
         email_data = EmailData(
             subject=subject,
