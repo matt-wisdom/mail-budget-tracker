@@ -45,4 +45,4 @@ ALTER TABLE "transactions" ADD FOREIGN KEY ("transaction_id") REFERENCES "dim_tr
 
 ALTER TABLE "transactions" ADD FOREIGN KEY ("date_id") REFERENCES "dim_date" ("id");
 
-ALTER TABLE "transactions" ADD FOREIGN KEY ("user_id") REFERENCES "dim_customer" ("id");
+ALTER TABLE "transactions" ADD FOREIGN KEY ("customer_id") REFERENCES "dim_customer" ("id");
