@@ -1,5 +1,5 @@
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import pickle
 from typing import List
@@ -85,7 +85,8 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
         return []
     service = build("gmail", "v1", credentials=creds)
     date_str = date.strftime("%Y/%m/%d")
-    query = f"after:{date_str}"
+    next_day_str = (date_str + timedelta(days=1)).strftime("%Y/%m/%d")
+    query = f"after:{date_str} before:{next_day_str}"
     results = (
         service.users()
         .messages()
