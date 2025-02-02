@@ -3,6 +3,8 @@ import psycopg
 from datetime import datetime
 from contextlib import contextmanager
 
+from src.logger import LOGGER
+
 
 # Reusable context manager for DB connections
 @contextmanager
@@ -15,12 +17,15 @@ def get_db_connection():
         conn.close()  # Ensure connection is closed
 
 
-# Helper function to insert data and return ID
 def insert_data(query: str, values: tuple) -> int:
-    with get_db_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(query, values)
-            return cur.fetchone()[0]  # Return the inserted ID
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(query, values)
+                return cur.fetchone()[0]  # Return the inserted ID
+    except Exception as e:
+        LOGGER.error(f"Error inserting data: {e}")
+        return 0
 
 
 # Function to insert transaction details

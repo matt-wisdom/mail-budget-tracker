@@ -2,6 +2,7 @@ import json
 import os
 import re
 import google.generativeai as genai
+from pydantic import ValidationError
 
 from src.db import (
     insert_bank,
@@ -10,6 +11,7 @@ from src.db import (
     insert_transaction,
     insert_transaction_details,
 )
+from src.logger import LOGGER
 from src.models import Transaction
 
 from .prompts import EXTRACT_EMAIL_PROMPT
@@ -33,15 +35,20 @@ def extract_json_from_markdown(markdown_text):
         try:
             return json.loads(json_str)  # Convert to Python dictionary
         except json.JSONDecodeError:
-            return {"error": "Invalid JSON format"}
-
-    return {"error": "No JSON found"}
+            LOGGER.error("Invalid JSON")
+            return {}
+    LOGGER.error("No JSON data could be extracted")
+    return {}
 
 
 def extract_from_mail(email: str) -> Transaction:
     json_string = prompt_gemini(EXTRACT_EMAIL_PROMPT.format(email=email))
     data = extract_json_from_markdown(json_string)
-    return Transaction(**data)
+    try:
+        return Transaction(**data)
+    except (ValueError, ValidationError) as e:
+        LOGGER.error(f"Error parsing transaction data: {e}")
+        raise e
 
 
 def write_transaction_to_db(transaction: Transaction) -> int:

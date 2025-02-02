@@ -142,7 +142,7 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
         try:
             date_received_dt = datetime.strptime(date_received, "%a, %d %b %Y %H:%M:%S")
         except ValueError as e:
-            print(f"Error parsing date: {date_received} - {e}")
+            LOGGER.error(f"Error parsing date: {date_received} - {e}")
             date_received_dt = None
 
         if mark_unread:
