@@ -1,4 +1,4 @@
-CREATE TABLE "dimdate" (
+CREATE TABLE "dim_date" (
   "id" serial PRIMARY KEY,
   "date" timestamp,
   "year" integer,
@@ -10,7 +10,7 @@ CREATE TABLE "dimdate" (
   "second" integer
 );
 
-CREATE TABLE "dimcustomer" (
+CREATE TABLE "dim_customer" (
   "id" serial PRIMARY KEY,
   "sender" varchar(64),
   "receiver" varchar(64),
@@ -26,12 +26,12 @@ CREATE TABLE "transactions" (
   "transaction_id" integer
 );
 
-CREATE TABLE "dimbank" (
+CREATE TABLE "dim_bank" (
   "id" serial PRIMARY KEY,
   "bank_name" varchar(64)
 );
 
-CREATE TABLE "dim_transaction" (
+CREATE TABLE "dim_transaction_details" (
   "id" serial PRIMARY KEY,
   "transaction_id" varchar(32),
   "transaction_type" varchar(12),
@@ -39,10 +39,10 @@ CREATE TABLE "dim_transaction" (
   "description" varchar(128)
 );
 
-ALTER TABLE "transactions" ADD FOREIGN KEY ("bank_id") REFERENCES "dimbank" ("id");
+ALTER TABLE "transactions" ADD FOREIGN KEY ("bank_id") REFERENCES "dim_bank" ("id");
 
-ALTER TABLE "transactions" ADD FOREIGN KEY ("transaction_id") REFERENCES "dim_transaction" ("id");
+ALTER TABLE "transactions" ADD FOREIGN KEY ("transaction_id") REFERENCES "dim_transaction_details" ("id");
 
-ALTER TABLE "transactions" ADD FOREIGN KEY ("date_id") REFERENCES "dimdate" ("id");
+ALTER TABLE "transactions" ADD FOREIGN KEY ("date_id") REFERENCES "dim_date" ("id");
 
-ALTER TABLE "transactions" ADD FOREIGN KEY ("user_id") REFERENCES "dimcustomer" ("id");
+ALTER TABLE "transactions" ADD FOREIGN KEY ("user_id") REFERENCES "dim_customer" ("id");
