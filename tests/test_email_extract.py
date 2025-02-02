@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 from google.oauth2.credentials import Credentials
-from src.email_extract import authenticate_gmail, fetch_emails
+from email_fetcher import authenticate_gmail, fetch_emails
 from src.models import EmailData
 
 
