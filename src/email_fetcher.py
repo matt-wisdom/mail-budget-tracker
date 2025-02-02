@@ -11,6 +11,8 @@ import oauthlib
 import oauthlib.oauth2
 import oauthlib.oauth2.rfc6749
 
+from src.transaction_filters import FILTERS
+
 from .logger import LOGGER
 
 from .models import EmailData
@@ -35,6 +37,28 @@ def authenticate_gmail() -> Credentials:
         with open(token_path, "wb") as token:
             pickle.dump(creds, token)
     return creds
+
+
+def is_alert_tx(header_text: str) -> bool:
+    """
+    Determines if the header_text corresponds to a bank alert (transaction, payment, withdrawal,
+    deposit, or funding) by checking if any of the filter keyword combinations are present.
+
+    Args:
+        header_text (str): The email header text (typically the Subject field).
+
+    Returns:
+        bool: True if the header_text matches any of the alert keyword combinations, else False.
+    """
+    # Convert the header text to lowercase for case-insensitive matching.
+    text = header_text.lower()
+
+    # Iterate over each keyword pair (or combination) in the filters list.
+    for combo in FILTERS:
+        # Check if every keyword in the combination is found in the text.
+        if all(keyword in text for keyword in combo):
+            return True
+    return False
 
 
 def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
@@ -83,6 +107,9 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
         subject = next(
             (h["value"] for h in headers if h["name"] == "Subject"), "No Subject"
         )
+        if is_alert_tx(subject) is False:
+            continue
+
         sender = next(
             (h["value"] for h in headers if h["name"] == "From"), "Unknown Sender"
         )
