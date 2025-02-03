@@ -1,4 +1,4 @@
-.PHONY: install ruff format test coverage
+.PHONY: install ruff format test coverage airstop airflow
 
 # Install dependencies using Poetry
 install:
@@ -30,11 +30,19 @@ coverage:
 
 airflow:
 	@echo "Starting airflow"
+	export PYTHONPATH=${PWD}
 	airflow webserver --port 8080 -D
 	airflow scheduler -D
 	@echo "Started airflow webserver and scheduler"
 
 airstop:
 	@echo "Stopping airflow"
-	# pkill -f "airflow scheduler"
+	pkill -f "airflow scheduler"
 	pkill -f "airflow webserver"
+
+airflow-reset:
+	airflow db reset
+
+airflow-adminuser:
+	@echo "Creating airflow admin"
+	airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
