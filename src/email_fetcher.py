@@ -2,6 +2,7 @@ import base64
 from datetime import datetime, timedelta
 import os
 import pickle
+from pathlib import Path
 from typing import List
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -22,7 +23,7 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 def authenticate_gmail() -> Credentials:
     creds: Credentials = None
-    token_path = "token.pickle"
+    token_path = Path(__file__).resolve().parent.parent / "token.pickle"
 
     if os.path.exists(token_path):
         with open(token_path, "rb") as token:
@@ -32,7 +33,10 @@ def authenticate_gmail() -> Credentials:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            credfile = token_path = (
+                Path(__file__).resolve().parent.parent / "credentials.json"
+            )
+            flow = InstalledAppFlow.from_client_secrets_file(credfile, SCOPES)
             creds = flow.run_local_server(port=0)
         with open(token_path, "wb") as token:
             pickle.dump(creds, token)
