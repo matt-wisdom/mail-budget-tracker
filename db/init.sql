@@ -1,3 +1,15 @@
+-- Create additional users
+CREATE USER airflow WITH ENCRYPTED PASSWORD 'airflow';
+-- CREATE USER postgres WITH ENCRYPTED PASSWORD 'postgres';
+
+-- Create databases
+-- CREATE DATABASE mailbudget OWNER postgres;
+CREATE DATABASE airflow OWNER airflow;
+
+-- Grant privileges
+-- GRANT ALL PRIVILEGES ON DATABASE mailbudget TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
+
 CREATE TABLE "dim_date" (
   "id" SERIAL PRIMARY KEY,
   "date" timestamp,
