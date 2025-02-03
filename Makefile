@@ -46,3 +46,6 @@ airflow-reset:
 airflow-adminuser:
 	@echo "Creating airflow admin"
 	airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
+
+airflow-writeuid:
+	echo -e "\nAIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" >> .env
