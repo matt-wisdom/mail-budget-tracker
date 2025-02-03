@@ -64,6 +64,17 @@ def insert_date(date: datetime) -> int:
 
 # Function to insert bank details
 def insert_bank(bank_name: str) -> int:
+    query = "SELECT id FROM dim_bank WHERE bank_name = %s"
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(query, (bank_name,))
+                result = cur.fetchone()
+                if result:
+                    return result[0]
+    except Exception as e:
+        LOGGER.error(f"Error checking bank existence: {e}")
+
     query = """
         INSERT INTO dim_bank (bank_name)
         VALUES (%s)
@@ -119,7 +130,7 @@ def insert_transaction(
 ) -> int:
     query = """
         INSERT INTO transactions (amount, currency, date_id, customer_id, bank_id, transaction_id, email_id)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         RETURNING transaction_id
     """
     return insert_data(
