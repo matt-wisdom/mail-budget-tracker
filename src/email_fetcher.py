@@ -85,7 +85,7 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
         return []
     service = build("gmail", "v1", credentials=creds)
     date_str = date.strftime("%Y/%m/%d")
-    next_day_str = (date_str + timedelta(days=1)).strftime("%Y/%m/%d")
+    next_day_str = (date + timedelta(days=1)).strftime("%Y/%m/%d")
     query = f"after:{date_str} before:{next_day_str}"
     results = (
         service.users()
@@ -108,9 +108,10 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
         subject = next(
             (h["value"] for h in headers if h["name"] == "Subject"), "No Subject"
         )
+        LOGGER.info(f"Got email with subject: {subject}")
         if is_alert_tx(subject) is False:
             continue
-
+        LOGGER.info("Is alert")
         sender = next(
             (h["value"] for h in headers if h["name"] == "From"), "Unknown Sender"
         )
@@ -120,13 +121,19 @@ def fetch_emails(date: datetime, mark_unread: bool = True) -> List[EmailData]:
 
         # Extract email body (plain text or HTML)
         body = "No Content"
+
         if "parts" in email_payload:
             for part in email_payload["parts"]:
                 if part["mimeType"] == "text/plain":
+                    # Check the content transfer encoding and decode accordingly
                     body = base64.urlsafe_b64decode(part["body"]["data"]).decode(
                         "utf-8"
                     )
-                    break  # Get first plain text part
+        else:
+            body = base64.urlsafe_b64decode(email_payload["body"]["data"]).decode(
+                "utf-8"
+            )
+
         # Parse the date to a datetime object
         # Clean and parse the date received
         date_received = date_received.split(" (")[
