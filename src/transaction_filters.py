@@ -51,4 +51,10 @@ FILTERS = [
     ["withdrawal", "deposit"],  # if alerts mention both terms
     ["funding", "deposit"],
     ["funding", "withdrawal"],
+    ["transfer", "success"],
+    ["transfer", "fail"],
+    ["transfer", "unsuccessful"],
+    ["transfer", "new"],
+    ["transfer", "notification"],
+    ["transfer", "alert"],
 ]
