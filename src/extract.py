@@ -3,6 +3,7 @@ import os
 import re
 import google.generativeai as genai
 from pydantic import ValidationError
+import pydantic_core
 
 from src.db import (
     insert_bank,
@@ -45,8 +46,13 @@ def extract_from_mail(email: str) -> Transaction:
     json_string = prompt_gemini(EXTRACT_EMAIL_PROMPT.format(email=email))
     data = extract_json_from_markdown(json_string)
     try:
+        print(data)
         return Transaction(**data)
-    except (ValueError, ValidationError) as e:
+    except (
+        ValueError,
+        ValidationError,
+        pydantic_core._pydantic_core.ValidationError,
+    ) as e:
         LOGGER.error(f"Error parsing transaction data: {e}")
         raise e
 
