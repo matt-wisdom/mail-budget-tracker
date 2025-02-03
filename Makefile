@@ -27,3 +27,14 @@ coverage:
 	@echo "Generating HTML coverage report..."
 	poetry run coverage html
 	@echo "Coverage report generated in htmlcov/index.html"
+
+airflow:
+	@echo "Starting airflow"
+	airflow webserver --port 8080 -D
+	airflow scheduler -D
+	@echo "Started airflow webserver and scheduler"
+
+airstop:
+	@echo "Stopping airflow"
+	# pkill -f "airflow scheduler"
+	pkill -f "airflow webserver"
