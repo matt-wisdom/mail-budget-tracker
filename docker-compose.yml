@@ -90,6 +90,13 @@ x-airflow-common:
       condition: service_healthy
 
 services:
+  metabase:
+    image: metabase/metabase
+    ports:
+      - "3000:3000"
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+
   postgres:
     image: postgres:16
     container_name: postgres
