@@ -100,17 +100,27 @@ def test_extract_from_mail(mock_prompt_gemini):
     mock_prompt_gemini.assert_called_once()
 
 
+@patch("src.extract.insert_time", return_value=1)
 @patch("src.extract.insert_transaction", return_value=1)
 @patch("src.extract.insert_transaction_details", return_value=1)
 @patch("src.extract.insert_bank", return_value=1)
 @patch("src.extract.insert_date", return_value=1)
 @patch("src.extract.insert_customer", return_value=1)
 def test_write_transaction_to_db(
-    mock_cust, mock_date, mock_bank, mock_tdet, mock_trans
+    mock_cust, mock_date, mock_bank, mock_tdet, mock_trans, mock_time
 ):
-    assert write_transaction_to_db(EXPECTED_TRANSACTION, 0) == 1
-    mock_cust.assert_called_once()
-    mock_date.assert_called_once()
-    mock_bank.assert_called_once()
-    mock_tdet.assert_called_once()
-    mock_trans.assert_called_once()
+    assert write_transaction_to_db(EXPECTED_TRANSACTION, 1) == 1
+    mock_cust.assert_called()
+    mock_date.assert_called_once_with(EXPECTED_TRANSACTION.date)
+    mock_bank.assert_called_once_with(EXPECTED_TRANSACTION.bank_name)
+    mock_tdet.assert_called_once_with(
+        EXPECTED_TRANSACTION.transaction_id,
+        EXPECTED_TRANSACTION.transaction_type,
+        EXPECTED_TRANSACTION.classification,
+        EXPECTED_TRANSACTION.description,
+        EXPECTED_TRANSACTION.account_number,
+    )
+    mock_trans.assert_called_once_with(
+        EXPECTED_TRANSACTION.amount, EXPECTED_TRANSACTION.currency, 1, 1, 1, 1, 1, 1, 1
+    )
+    mock_time.assert_called_once_with(EXPECTED_TRANSACTION.date)
