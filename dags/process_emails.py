@@ -17,7 +17,7 @@ from src.models import EmailData, Transaction  # noqa: E402
 @dag(
     schedule="@daily",
     catchup=True,
-    start_date=pendulum.datetime(2024, 1, 28, tz="UTC"),
+    start_date=pendulum.datetime(2023, 1, 28, tz="UTC"),
     tags=["ETL"],
 )
 def mail_etl():
