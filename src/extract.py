@@ -9,6 +9,7 @@ from src.db import (
     insert_bank,
     insert_customer,
     insert_date,
+    insert_time,
     insert_transaction,
     insert_transaction_details,
 )
@@ -58,22 +59,25 @@ def extract_from_mail(email: str) -> Transaction:
 
 
 def write_transaction_to_db(transaction: Transaction, email_id: int) -> int:
-    cust_id = insert_customer(
-        transaction.sender, transaction.receiver, transaction.account_number
-    )
+    sender_id = insert_customer(transaction.sender)
+    receiver_id = insert_customer(transaction.receiver)
     bank_id = insert_bank(transaction.bank_name)
     date_id = insert_date(transaction.date)
+    time_id = insert_time(transaction.date)
     transaction_details_id = insert_transaction_details(
         transaction.transaction_id,
         transaction.transaction_type,
         transaction.classification,
         transaction.description,
+        transaction.account_number,
     )
     id = insert_transaction(
         transaction.amount,
         transaction.currency,
         date_id,
-        cust_id,
+        time_id,
+        sender_id,
+        receiver_id,
         bank_id,
         email_id,
         transaction_details_id,
